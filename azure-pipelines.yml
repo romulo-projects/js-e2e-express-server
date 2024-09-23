@@ -4,7 +4,7 @@ trigger:
 pool:
   name: 'Default'  
   demands:
-  - agent.name -equals myagen
+  - agent.name -equals myagent
 
 steps:
 - task: UseNode@1
