@@ -3,6 +3,7 @@ trigger:
 
 pool:
   vmImage: 'ubuntu-latest'
+  - agent.name -equals myagent
 
 steps:
 - task: UseNode@1
