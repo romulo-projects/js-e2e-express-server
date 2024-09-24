@@ -55,8 +55,3 @@ steps:
     targetPath: '$(Build.ArtifactStagingDirectory)'
     publishLocation: 'pipeline'
   displayName: 'Publicando o artefato npm'
-
-- task: AzureDevOpsNotifications@1
-  inputs:
-    message: 'Build $(Build.BuildNumber) completed with status $(Build.Status)'
-  displayName: 'Envio de notificacoes do estado do build'
