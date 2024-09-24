@@ -6,53 +6,59 @@ pool:
   demands:
   - agent.name -equals myagent
 
+variables:
+  nodeVersion: '16.x'
+  npmCacheKey: 'npm | "$(Agent.OS)" | package-lock.json'
+  sourceDir: '$(Build.SourcesDirectory)'
+  artifactDir: '$(Build.ArtifactStagingDirectory)'
+
 steps:
 - task: UseNode@1
   inputs:
-    version: '16.x'
-  displayName: 'Instalando Node.js'
+    version: '$(nodeVersion)'
+  displayName: 'Instalando Node.js $(nodeVersion)'
 
 - task: CacheBeta@1
   inputs:
-    key: 'npm | "$(Agent.OS)" | package-lock.json'
-    path: '$(Build.SourcesDirectory)/node_modules'
-  displayName: 'Cache das dependencias do NPM para acelerar o build'
+    key: '$(npmCacheKey)'
+    path: '$(sourceDir)/node_modules'
+  displayName: 'Cache das dependências do NPM'
 
 - task: Npm@1
   inputs:
     command: 'ci'
-  displayName: 'clean & install'
+  displayName: 'Instalando dependências'
 
 - task: Npm@1
   inputs:
     command: 'custom'
     customCommand: 'run lint'
-  displayName: 'Teste de qualidade'
+  displayName: 'Executando Linter'
 
 - task: Npm@1
   inputs:
     command: 'custom'
     customCommand: 'run test'
-  displayName: 'Verificando a integridade do codigo'
+  displayName: 'Executando Testes'
 
 - task: Npm@1
   inputs:
     command: 'custom'
     customCommand: 'run build'
-  displayName: 'Build'
+  displayName: 'Build do Projeto'
 
 - task: CopyFiles@2
   inputs:
-    sourceFolder: '$(Build.SourcesDirectory)'
+    sourceFolder: '$(sourceDir)'
     contents: |
        src/*
        public/*
-    targetFolder: '$(Build.ArtifactStagingDirectory)'
-  displayName: 'Copiando os arquivos do projeto'
+    targetFolder: '$(artifactDir)'
+  displayName: 'Copiando Arquivos para o Diretório de Artefatos'
 
 - task: PublishPipelineArtifact@1
   inputs:
     artifactName: e2e-server
-    targetPath: '$(Build.ArtifactStagingDirectory)'
+    targetPath: '$(artifactDir)'
     publishLocation: 'pipeline'
-  displayName: 'Publicando o artefato npm'
+  displayName: 'Publicando Artefato'
