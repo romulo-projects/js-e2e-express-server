@@ -31,7 +31,8 @@ steps:
 
 - task: Npm@1
   inputs:
-    command: 'test'
+    command: 'custom'
+    customCommand: 'run test'
   displayName: 'Verificando a integridade do codigo'
 
 - task: Npm@1
