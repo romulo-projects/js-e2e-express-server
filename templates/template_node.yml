@@ -1,0 +1,56 @@
+parameters:
+  nodeVersion: '16.x'
+  npmCacheKey: 'npm | "$(Agent.OS)" | package-lock.json'
+  sourceDir: '$(Build.SourcesDirectory)'
+  artifactDir: '$(Build.ArtifactStagingDirectory)'
+
+steps:
+- task: UseNode@1
+  inputs:
+    version: ${{ parameters.nodeVersion }}
+  displayName: 'Instalando Node.js ${{ parameters.nodeVersion }}'
+
+- task: CacheBeta@1
+  inputs:
+    key: ${{ parameters.npmCacheKey }}
+    path: ${{ parameters.sourceDir }}/node_modules'
+  displayName: 'Cache das dependências do NPM'
+
+- task: Npm@1
+  inputs:
+    command: 'ci'
+  displayName: 'Instalando dependências'
+
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    customCommand: 'run lint'
+  displayName: 'Executando Linter'
+
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    customCommand: 'run test'
+  displayName: 'Executando Testes'
+
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    customCommand: 'run build'
+  displayName: 'Build do Projeto'
+
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: ${{ parameters.sourceDir }}
+    contents: |
+       src/*
+       public/*
+    targetFolder: ${{ parameters.artifactDir }}
+  displayName: 'Copiando Arquivos para o Diretório de Artefatos'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    artifactName: 'e2e-server'
+    targetPath: ${{ parameters.artifactDir }}
+    publishLocation: 'pipeline'
+  displayName: 'Publicando Artefato'
