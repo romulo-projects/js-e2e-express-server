@@ -16,30 +16,30 @@ steps:
 - task: UseNode@1
   inputs:
     version: '$(nodeVersion)'
-  displayName: 'Instalando Node.js $(nodeVersion)'
+  displayName: 'Instalacao Node.js $(nodeVersion)'
 
 - task: CacheBeta@1
   inputs:
     key: '$(npmCacheKey)'
     path: '$(sourceDir)/node_modules'
-  displayName: 'Cache das dependências do NPM'
+  displayName: 'Cache das dependencias do NPM'
 
 - task: Npm@1
   inputs:
     command: 'ci'
-  displayName: 'Instalando dependências'
+  displayName: 'Instalando dependencias'
 
 - task: Npm@1
   inputs:
     command: 'custom'
     customCommand: 'run lint'
-  displayName: 'Executando Linter'
+  displayName: 'Executando teste de qualidade'
 
 - task: Npm@1
   inputs:
     command: 'custom'
     customCommand: 'run test'
-  displayName: 'Executando Testes'
+  displayName: 'Executando teste de integridade'
 
 - task: Npm@1
   inputs:
@@ -54,7 +54,7 @@ steps:
        src/*
        public/*
     targetFolder: '$(artifactDir)'
-  displayName: 'Copiando Arquivos para o Diretório de Artefatos'
+  displayName: 'Copiando Arquivos para o Diretorio de Artefatos'
 
 - task: PublishPipelineArtifact@1
   inputs:
